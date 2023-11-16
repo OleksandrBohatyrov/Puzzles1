@@ -1,11 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace WinFormsApp1
@@ -21,9 +16,8 @@ namespace WinFormsApp1
             this.image = image;
             Cursor = Cursors.Hand;
 
-           
             float aspectRatio = (float)image.Width / image.Height;
-            int newWidth = 100; 
+            int newWidth = 100;
             int newHeight = (int)(newWidth / aspectRatio);
             Size = new Size(newWidth, newHeight);
 
@@ -40,7 +34,7 @@ namespace WinFormsApp1
             Console.WriteLine("down");
         }
 
-        private const int SnapGridSize = 50; 
+        private const int SnapGridSize = 10;
 
         private void OnMouseMove(object sender, MouseEventArgs e)
         {
@@ -53,6 +47,7 @@ namespace WinFormsApp1
                 Console.WriteLine("move");
             }
         }
+
         private void OnMouseUp(object sender, MouseEventArgs e)
         {
             isClicked = false;
@@ -68,12 +63,12 @@ namespace WinFormsApp1
     public partial class Form1 : Form
     {
         private PuzzlePiece[] puzzlePieces;
+        private string[] puzzleFolders = { "eiffel", "pisa", "pomoika", "svobody" };
 
         public Form1()
         {
             InitializeComponent();
             InitializeUI();
-
         }
 
         private void InitializeUI()
@@ -85,21 +80,32 @@ namespace WinFormsApp1
         {
             puzzlePieces = new PuzzlePiece[count];
 
+            Random random = new Random();
+            string selectedFolder = puzzleFolders[random.Next(puzzleFolders.Length)];
+
             for (int i = 0; i < count; i++)
             {
-                Bitmap puzzleImage = new Bitmap($"../../../{i + 1}.jpg");
-                puzzleImage.MakeTransparent();
+                string filePath = $"../../../{selectedFolder}/{i + 1}.jpg";
 
-
-                puzzlePieces[i] = new PuzzlePiece(puzzleImage)
+                try
                 {
-                    Location = new Point(10, 10),
-                };
+                    Bitmap puzzleImage = new Bitmap(filePath);
+                    puzzleImage.MakeTransparent();
 
-                Controls.Add(puzzlePieces[i]);
+                    puzzlePieces[i] = new PuzzlePiece(puzzleImage)
+                    {
+                        Location = new Point(10, 10),
+                    };
+
+                    Controls.Add(puzzlePieces[i]);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error {filePath}: {ex.Message}");
+                   
+                }
             }
-
         }
-
     }
+
 }
